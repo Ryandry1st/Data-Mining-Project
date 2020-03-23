@@ -7,7 +7,7 @@ def Parse_Meta(filename, filepath):
     """
     Returns the most important meta data from the file
     :param filename: Str, FilePath/*FileName.sigmf-meta*
-    :param filepath: Str, *FilePath/*FileName.sigmf-meta"
+    :param filepath: Str, *FilePath/*FileName.sigmf-meta
     :return: The most important Meta data
     """
     TX_ID_pattern = r'(X310_)(.*)(_.*)(_.*)(.sigmf-meta)'
@@ -16,7 +16,6 @@ def Parse_Meta(filename, filepath):
     except AttributeError as e:
         print("Incorrect file type, only use sigmf-meta")
         return None
-    DATA_PATTERN = r''
 
     with open(filepath+filename, "r") as f:
         md = json.loads(f.read())
@@ -45,23 +44,28 @@ def Parse_Data(filename, filepath, num_values):
     with open(filepath+filename, 'rb') as f:
         if num_values is not None:
             data = np.zeros((num_values, 2))
-        for i in range(num_values):
-            for j in range(2):
-                fileCont = f.read(4)
-                ar = np.array(fileCont).byteswap('<')
-                data[i, j] = ar.view(dtype=np.float32)
+            fileCont = f.read()
+
+            ar = np.array(bytearray(fileCont)).view(dtype=np.float64).reshape((-1, 2))
+            data = ar[:num_values, :]
+
     return data
 
-path = "/Users/rmd2758/Documents/UT/Courses/Data_Mining/Final Project/KRI-16Devices-RawData/2ft/"
-data_path = "WiFi_air_X310_3123D7B_2ft_run1.sigmf-data"
-meta_path = "WiFi_air_X310_3123D7B_2ft_run1.sigmf-meta"
+dist = "2ft"
+path = "/Users/rmd2758/Documents/UT/Courses/Data_Mining/Final Project/KRI-16Devices-RawData/" + dist + "/"
+data_path = "WiFi_air_X310_3123D7B_" + dist + "_run1.sigmf-data"
+meta_path = "WiFi_air_X310_3123D7B_" + dist + "_run1.sigmf-meta"
 
 meta = Parse_Meta(meta_path, path)
-data = Parse_Data(data_path, path, meta['num_samples'])
-print(data.shape)
 print(meta)
+
+values_to_grab = 20
+# values_to_grab = meta['num_samples'] # set this for all the data in the file -- kinda slow
+data = Parse_Data(data_path, path, values_to_grab)
+print(data.shape)
 
 plt.plot(data[:, 0])
 plt.plot(data[:, 1])
 plt.legend(['real component', 'imaginary component'])
+plt.title("Samples from the sigmf-data File")
 plt.show()
