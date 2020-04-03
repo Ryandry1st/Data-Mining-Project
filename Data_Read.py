@@ -1,7 +1,6 @@
 import numpy as np
 import json
 import re
-import matplotlib.pyplot as plt
 import tensorflow as tf
 import os
 
@@ -62,10 +61,13 @@ def parse_data(filename, filepath, num_values):
 
 
 def name_to_one_hot(dev_name):
-    '''
-    Converts a device name to a one-hot encoded label
-    '''
-    output = np.zeros((1, 16)) # 16 possible outputs
+    """
+    Converts a device name to a one-hot encoded label.
+    :param dev_name: name of the device to convert to one-hot
+    :return the one-hot encoded device name
+    """
+
+    output = np.zeros((1, 16))  # 16 possible outputs
     name_set = {'3123D7B': 0,
                 '3123D7D': 1,
                 '3123D7E': 2,
@@ -91,9 +93,9 @@ def name_to_one_hot(dev_name):
 
 
 def one_hot_to_name(label):
-    '''
+    """
     Converts a one-hot encoded value to a device name, for fun
-    '''
+    """
     pass
 
 
@@ -128,18 +130,18 @@ def gather_everything(path, num_vals=20006400, num_files=32):
     return big_data, labels
 
 
-def restructure_data(in_data, in_labels, out_sample_size=256, complex=False):
+def restructure_data(in_data, in_labels, out_sample_size=256, complex_val=False):
     """
     restructure the data from being in shape (sets, samples, 2) to instead be (new_sets, out_sample_size*2). The two can
     be changed by setting complex to True.
     :param in_data: The data to be processed
     :param in_labels: the labels for the associated data
     :param out_sample_size: the number of samples desired in each set of the output
-    :param complex: defaults to False. Setting this will turn the data into complex values instead of two channels of real
+    :param complex_val: defaults to False. Setting this will turn the data into complex values instead of two channels of real
     :return the data in the desired format.
     """
     sets, samples = in_data.shape[:2]
-    if samples%out_sample_size:
+    if samples % out_sample_size:
         print(f"{samples} samples does not easily divide by {out_sample_size}, throwing away extra data")
 
     end_sets = int(samples//out_sample_size * sets)
@@ -228,9 +230,11 @@ def tfr_parser(file, path, valid_split, batch_size=32, compressed=True):
     """
     Takes in a TFRecord file and returns a dataset iterator which is parsed, shuffled, and batched.
     :param file: name of the file of the TFRecord
+    :param valid_split: The split of the data to use as validation and test sizes (0, 1)
     :param path: string of the path to the TFRecord
     :param batch_size: The number of samples to include in each batch for taking from the dataset
     :param compressed: Defaults to False, set to True if the TFRecord was compressed
+    :return train, validation, and test dataset iterators
     """
     print(path+file)
     comp = None
@@ -291,5 +295,3 @@ def tfr_parser(file, path, valid_split, batch_size=32, compressed=True):
 #
 # for i, val in enumerate(train.take(10)):
 #     print(val['data'].shape)
-
-

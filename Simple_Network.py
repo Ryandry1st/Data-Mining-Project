@@ -12,11 +12,11 @@ print(tf.__version__)
 ######################         Best practices          #####################
 # add partials to save typing everything out
 default_Dense = partial(keras.layers.Dense, activation='relu', kernel_initializer='he_normal')
-default_Conv = partial(keras.layers.Conv1D, kernel_size=3, strides = 1, padding='SAME', activation='relu')
+default_Conv = partial(keras.layers.Conv1D, kernel_size=3, strides=1, padding='SAME', activation='relu')
 
 # Callbacks, useful for getting the best training result (takes a while to train like this so use when
 # you want the best results of a model
-early_stopping = keras.callbacks.EarlyStopping(patience=12, restore_best_weights = True)
+early_stopping = keras.callbacks.EarlyStopping(patience=12, restore_best_weights=True)
 # stops the model when you start overfitting and gives the best weights back
 lr_reduc = keras.callbacks.ReduceLROnPlateau(patience=4, factor=0.5, verbose=0, min_lr=8e-6)
 # reduces the learning rate if the validation error stops getting better
@@ -43,10 +43,8 @@ model = keras.models.Sequential([
     default_Dense(16, activation='softmax')
 ])
 
-optimizer = keras.optimizers.Adam(lr=1e-4) # I like Nadam better than Adam but they are pretty similar
-model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['mae'])
+optimizer = keras.optimizers.Adam(lr=1e-4)  # I like Nadam better than Adam but they are pretty similar
+model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 model.summary()
 
 model.fit(train, batch_size=batch_size, epochs=1000, callbacks=callbacks, validation_data=valid)
-
-
